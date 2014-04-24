@@ -2,7 +2,7 @@
 
 /*
   Plugin Name: Complex TV Embed
-  Version: 1.0
+  Version: 1.1
   Author: Pablo Mendez
   Author URI: http://www.complex.com
   Plugin URI: http://colabs.complex.com
@@ -15,31 +15,41 @@ add_shortcode( 'complextv', 'complextv_shortcode' );
 
 function complextv_shortcode( $atts, $content ) {
 
+  $options = get_option( 'complextv_embed_options' );
+
   // Attributes
   extract( shortcode_atts(
       array(
-        'sitename' => get_option( 'ooyala_embed_site_name' ),
+        'sitename' => $options['ooyala_embed_site_name' ],
         'contentid' => '',
-        'playerid' => get_option( 'ooyala_embed_player_id' ),
-        'adsetid' => get_option( 'ooyala_embed_adset_id' ),
-        'width' => get_option( 'ooyala_embed_width' ),
-        'height' => get_option( 'ooyala_embed_height' ),
-        'keywords' => get_option( 'ooyala_embed_keywords' )
+        'playerid' => $options['ooyala_embed_player_id' ],
+        'adsetid' => $options['ooyala_embed_adset_id' ],
+        'width' => $options['ooyala_embed_width' ],
+        'height' => $options['ooyala_embed_height' ],
+        'keywords' => $options['ooyala_embed_keywords'],
+        'autoplay' => ''
       ), $atts )
   );
+  
+  $kw = '';
+  if ( isset($keywords) && !empty($keywords) ) {
+    $kw = ',kw: "' . $keywords . '"';
+  }
+  
+  $auto = '';
+  if (!empty( $autoplay ) && isset( $autoplay )) {
+    $auto = ', autoplay: true';
+  }
 
   $ovideo =  '<script src="http://cdnl.complex.com/tv/js/complexEmbed.min.js"></script>
-                <script src="http://player.ooyala.com/v3/'.$playerid.'">
-                </script>'
-    . '<div id="ooyalaplayer'. $contentid .'" style="width:'.$width.'px;height:'.$height.'px;"></div>
-                <script>'.'
-              ComplexEmbed.Application.initialize({cId: "'.$contentid.'",adSetCode: "'. $adsetid . '",site: "' . $sitename .'",kw: "'. $keywords .'"});
-                </script><noscript>
-                <div>Please enable Javascript to watch this video</div></noscript>';
-   return $ovideo;
-
-
+              <script src="http://player.ooyala.com/v3/'.$playerid.'"></script>
+              <div id="ooyalaplayer'. $contentid .'" style="width:'.$width.'px;height:'.$height.'px;"></div>
+              <script>ComplexEmbed.Application.initialize({cId: "'.$contentid.'",adSetCode: "'. $adsetid . '" '. $auto .', site: "' . $sitename .'"'.$kw.'});</script>
+              <noscript><div>Please enable Javascript to watch this video</div></noscript>';
+              
+ return $ovideo;
 }
+
 
 add_action( 'admin_menu', 'complex_tv_embed_admin_actions' );
 function complex_tv_embed_admin_actions() {

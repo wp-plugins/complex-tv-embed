@@ -3,7 +3,7 @@ Contributors: complex_ntrsctn
 Tags: complextv, ooyala
 Requires at least: 3.0.1
 Tested up to: 3.8
-Stable tag: trunk
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: 
@@ -44,6 +44,9 @@ This plugin creates a shortcode for these videos making it easier to embed video
 1. The Settings page to fill in after activating the plugin, which can be found in `Setting > ComplexTV Embed`
 
 == Changelog ==
+
+= 1.1 =
+* Fix for default values not populating shortcode. Exclude unnecessary arguments.
 
 = 1.0 =
 * Complex TV Embed plugin
