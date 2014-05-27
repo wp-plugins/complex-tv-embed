@@ -2,7 +2,7 @@
 
 /*
   Plugin Name: Complex TV Embed
-  Version: 1.1
+  Version: 1.2
   Author: Pablo Mendez
   Author URI: http://www.complex.com
   Plugin URI: http://colabs.complex.com
