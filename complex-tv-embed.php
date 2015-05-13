@@ -2,13 +2,12 @@
 
 /*
   Plugin Name: Complex TV Embed
-  Version: 1.2
+  Version: 1.3
   Author: Pablo Mendez
   Author URI: http://www.complex.com
-  Plugin URI: http://colabs.complex.com
-  Description: WP plugin to help publishers with the ooyala video embed codes for their posts.
+  Plugin URI: http://www.complex.com
+  Description: WP plugin to help publishers embed video from Complex TV.
 */
-
 
 // Add Shortcode
 add_shortcode( 'complextv', 'complextv_shortcode' );
@@ -33,19 +32,22 @@ function complextv_shortcode( $atts, $content ) {
   
   $kw = '';
   if ( isset($keywords) && !empty($keywords) ) {
-    $kw = ',kw: "' . $keywords . '"';
+    $kw = '&kw='.$kw;
   }
   
   $auto = '';
   if (!empty( $autoplay ) && isset( $autoplay )) {
-    $auto = ', autoplay: true';
+    $auto = '&autoplay=true';
   }
 
-  $ovideo =  '<script src="http://cdnl.complex.com/tv/js/complexEmbed.min.js"></script>
-              <script src="http://player.ooyala.com/v3/'.$playerid.'"></script>
-              <div id="ooyalaplayer'. $contentid .'" style="width:'.$width.'px;height:'.$height.'px;"></div>
-              <script>ComplexEmbed.Application.initialize({cId: "'.$contentid.'",adSetCode: "'. $adsetid . '" '. $auto .', site: "' . $sitename .'"'.$kw.'});</script>
-              <noscript><div>Please enable Javascript to watch this video</div></noscript>';
+  $ovideo = '<script class="cmplx-embed" src="http://player.complex.com/tv/js/embed.js?';
+  $ovideo .= 'cId='.$contentid;
+  $ovideo .= '&pId='. $playerid;
+  $ovideo .= '&adSetCode='. $adsetid;
+  $ovideo .= '&site='.$sitename;
+  $ovideo .= $kw;
+  $ovideo .= $auto;
+  $ovideo .= '"></script><noscript><div>Please enable Javascript to watch this video</div></noscript>';
               
  return $ovideo;
 }
@@ -75,14 +77,12 @@ function complextv_createembed_admin() { ?>
 add_action( 'admin_init', 'complextv_embed_admin_init' );
 
 function complextv_embed_admin_init() {
-  //register_setting( $option_group, $option_name, $sanitize_callback );
   register_setting( 'complextv_embed_options', // $option_group
     'complextv_embed_options', // $option_name
     'complextv_embed_validate_options' //$sanitize_callback
   );
 
   //section
-  //add_settings_section( $id, $title, $callback, $page );
   add_settings_section( 'complextv_embed_main', // $id
     '<h2>ComplexTV Embed - Settings</h2>', // $title
     'complextv_embed_section_text', // $callback
@@ -90,7 +90,6 @@ function complextv_embed_admin_init() {
   );
 
   //fields settings.
-  //add_settings_field( $id, $title, $callback, $page, $section, $args );
   add_settings_field( 'ooyala_embed_site_name', // $id
     'Site Name',  // $$title
     'ooyala_embed_site_name_setting_input', // $callback
@@ -98,7 +97,6 @@ function complextv_embed_admin_init() {
     'complextv_embed_main' // $section
   );
 
-  //add_settings_field( $id, $title, $callback, $page, $section, $args );
   add_settings_field( 'ooyala_embed_player_id', // $id
     'Player ID', // $title
     'ooyala_embed_player_id_setting_input', // $callback
@@ -106,7 +104,6 @@ function complextv_embed_admin_init() {
     'complextv_embed_main' //$section
   );
 
-  //add_settings_field( $id, $title, $callback, $page, $section, $args );
   add_settings_field( 'ooyala_embed_adset_id', // $id,
     'AdSet ID', //  $title
     'ooyala_embed_adset_id_setting_input', // $callback
@@ -114,14 +111,12 @@ function complextv_embed_admin_init() {
     'complextv_embed_main' // $section
   );
 
-  //addd_settings_field( $id, $title, $callback, $page, $section, $args );
   add_settings_field( 'ooyala_embed_width',
     'Width',
     'ooyala_embed_width_setting_input',
     'complextv_embed',
     'complextv_embed_main' );
 
-  //add_settings_field( $id, $title, $callback, $page, $section, $args );
   add_settings_field( 'ooyala_embed_height',
     'Height',
     'ooyala_embed_height_setting_input',
@@ -138,48 +133,48 @@ function complextv_embed_section_text() {
 function ooyala_embed_site_name_setting_input() {
   $options = get_option( 'complextv_embed_options' );
   $text_string = $options['ooyala_embed_site_name'];
-  // echo the field
+
   echo "<input id='ooyala_embed_site_name' name='complextv_embed_options[ooyala_embed_site_name]' type='text' value='$text_string' />";
 }
 
 function ooyala_embed_player_id_setting_input() {
   $options = get_option( 'complextv_embed_options' );
   $text_string = $options['ooyala_embed_player_id'];
-  // echo the field
+
   echo "<input id='ooyala_embed_player_id' name='complextv_embed_options[ooyala_embed_player_id]' type='text' value='$text_string' />";
 }
 
 function ooyala_embed_adset_id_setting_input() {
   $options = get_option( 'complextv_embed_options' );
   $text_string = $options['ooyala_embed_adset_id'];
-  // echo the field
+
   echo "<input id='ooyala_embed_adset_id' name='complextv_embed_options[ooyala_embed_adset_id]' type='text' value='$text_string' />";
 }
 
 function ooyala_embed_width_setting_input() {
   $options = get_option( 'complextv_embed_options' );
   $text_string = $options['ooyala_embed_width'];
-  // echo the field
+
   echo "<input id='ooyala_embed_width' name='complextv_embed_options[ooyala_embed_width]' type='number' value='$text_string' />";
 }
 
 function ooyala_embed_height_setting_input() {
   $options = get_option( 'complextv_embed_options' );
   $text_string = $options['ooyala_embed_height'];
-  // echo the field
+
   echo "<input id='ooyala_embed_height' name='complextv_embed_options[ooyala_embed_height]' type='number' value='$text_string' />";
 }
 
 function complextv_embed_validate_options( $input ) {
 
-  $fields = array('ooyala_embed_site_name', 'ooyala_embed_player_id', 'ooyala_embed_adset_id' );
-  $integerFields = array('ooyala_embed_width', 'ooyala_embed_height');
+  $fields = array( 'ooyala_embed_site_name', 'ooyala_embed_player_id', 'ooyala_embed_adset_id' );
+  $integerFields = array( 'ooyala_embed_width', 'ooyala_embed_height' );
 
   foreach ($fields as $key => $value) {
+    
     $valid[ $value ] = preg_replace( '/[^a-zA-Z|0-9]/', '', $input[$value] );
 
-    if( $valid[ $value ] != $input[ $value ] ) {
-      // add_settings_error( $setting, $code, $message, $type );
+    if( $valid[ $value ] !== $input[ $value ] ) {
       add_settings_error(
         $value, // $setting
         'complextv_embed_texterror', // $code
@@ -194,7 +189,6 @@ function complextv_embed_validate_options( $input ) {
      $valid[ $value ] = preg_replace( '/[^0-9]/', '', $input[$value] );
  
      if( $valid[ $value ] != $input[ $value ] ) {
-        // add_settings_error( $setting, $code, $message, $type );
         add_settings_error(
           $value, // $setting
           'complextv_embed_texterror', // $code
